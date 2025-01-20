@@ -66,6 +66,12 @@ export default function FinancialDashboard() {
           </div>
         </div>
 
+        {!ticker && (
+          <div className="text-center text-gray-400 text-lg">
+            Click the <Search className="inline w-5 h-5" /> icon to search for a stock.
+          </div>
+        )}
+
         {ticker && (
           <div className="space-y-8">
             <div className="flex justify-between items-center">
