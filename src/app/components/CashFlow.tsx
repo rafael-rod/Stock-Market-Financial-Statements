@@ -1,8 +1,6 @@
-import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSpring, animated as a } from '@react-spring/web';
 
 interface CashFlowProps {
   ticker: string;
@@ -27,38 +25,23 @@ interface CashFlowData {
   netCashFlow: number;
 }
 
-// Create a type-safe animated div component
-const AnimatedDiv = a('div');
-
 export default function CashFlow({ ticker }: CashFlowProps) {
   const [data, setData] = useState<CashFlowData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isDelayed, setIsDelayed] = useState(false);
-  const [showChart, setShowChart] = useState(false);
-
-  const rectAnimation = useSpring({
-    from: { opacity: 0, transform: 'translateY(20px)' },
-    to: { opacity: isDelayed ? 1 : 0, transform: isDelayed ? 'translateY(0px)' : 'translateY(20px)' },
-    config: { tension: 200, friction: 20 },
-  });
 
   useEffect(() => {
-    const delayTimeout = setTimeout(() => {
-      setIsDelayed(true);
-    }, 300);
-
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await fetch(`https://stock-market-financial-statements-api.vercel.app/${ticker}`, {
-    method: 'GET',
-    mode: 'cors',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-});
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -92,23 +75,7 @@ export default function CashFlow({ ticker }: CashFlowProps) {
     };
 
     fetchData();
-
-    return () => clearTimeout(delayTimeout);
   }, [ticker]);
-
-  useEffect(() => {
-    if (data.length > 0 && isDelayed) {
-      const timer = setTimeout(() => {
-        setShowChart(true);
-      }, 0);
-
-      return () => clearTimeout(timer);
-    }
-  }, [data, isDelayed]);
-
-  if (!isDelayed) {
-    return <div className="text-center text-gray-400">Loading...</div>;
-  }
 
   if (loading) return <div className="text-center text-gray-400">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
@@ -126,41 +93,39 @@ export default function CashFlow({ ticker }: CashFlowProps) {
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <AnimatedDiv style={rectAnimation} className="bg-gray-800 p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out">
+        <div className="bg-gray-800 p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out">
           <h4 className="text-lg font-medium mb-2 text-gray-300">Operating Cash Flow</h4>
           <p className="text-3xl font-bold text-blue-400">{formatTooltip(latestData.operatingCashFlow)}</p>
-        </AnimatedDiv>
-        <AnimatedDiv style={rectAnimation} className="bg-gray-800 p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out">
+        </div>
+        <div className="bg-gray-800 p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out">
           <h4 className="text-lg font-medium mb-2 text-gray-300">Investing Cash Flow</h4>
           <p className="text-3xl font-bold text-yellow-400">{formatTooltip(latestData.investingCashFlow)}</p>
-        </AnimatedDiv>
-        <AnimatedDiv style={rectAnimation} className="bg-gray-800 p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out">
+        </div>
+        <div className="bg-gray-800 p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out">
           <h4 className="text-lg font-medium mb-2 text-gray-300">Free Cash Flow</h4>
           <p className="text-3xl font-bold text-green-400">{formatTooltip(latestData.netCashFlow)}</p>
-        </AnimatedDiv>
+        </div>
       </div>
 
       <div className="h-80 bg-black p-4 rounded-lg">
-        {showChart && (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="date" stroke="#9CA3AF" />
-              <YAxis stroke="#9CA3AF" tickFormatter={formatYAxis} domain={['auto', 'auto']} />
-              <Tooltip
-                contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '0.375rem' }}
-                itemStyle={{ color: '#E5E7EB' }}
-                labelStyle={{ color: '#9CA3AF' }}
-                formatter={formatTooltip}
-              />
-              <Legend wrapperStyle={{ color: '#E5E7EB' }} />
-              <Line type="monotone" dataKey="operatingCashFlow" name="Operating" stroke="#3B82F6" />
-              <Line type="monotone" dataKey="investingCashFlow" name="Investing" stroke="#F59E0B" />
-              <Line type="monotone" dataKey="financingCashFlow" name="Financing" stroke="#10B981" />
-              <Line type="monotone" dataKey="netCashFlow" name="Free Cash Flow" stroke="#EF4444" />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis dataKey="date" stroke="#9CA3AF" />
+            <YAxis stroke="#9CA3AF" tickFormatter={formatYAxis} domain={['auto', 'auto']} />
+            <Tooltip
+              contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '0.375rem' }}
+              itemStyle={{ color: '#E5E7EB' }}
+              labelStyle={{ color: '#9CA3AF' }}
+              formatter={formatTooltip}
+            />
+            <Legend wrapperStyle={{ color: '#E5E7EB' }} />
+            <Line type="monotone" dataKey="operatingCashFlow" name="Operating" stroke="#3B82F6" />
+            <Line type="monotone" dataKey="investingCashFlow" name="Investing" stroke="#F59E0B" />
+            <Line type="monotone" dataKey="financingCashFlow" name="Financing" stroke="#10B981" />
+            <Line type="monotone" dataKey="netCashFlow" name="Free Cash Flow" stroke="#EF4444" />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
 
       <Card className="bg-black border-gray-700">
