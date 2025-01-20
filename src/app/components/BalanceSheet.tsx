@@ -47,8 +47,6 @@ export default function BalanceSheet({ ticker }: BalanceSheetProps) {
 });
         if (!response.ok) {
           throw new Error('Failed to fetch data');
-        } else {
-          setLoading(false);
         }
 
         const responseText = await response.text();
