@@ -311,6 +311,7 @@ export default function CashFlow({ ticker }: CashFlowProps) {
 
   if (loading) return <div className="text-center text-gray-400">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (data.length === 0) return <div className="text-center text-gray-400">No data available</div>;
 
   const latestData = data[data.length - 1];
 
