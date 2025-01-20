@@ -261,7 +261,13 @@ export default function BalanceSheet({ ticker }: BalanceSheetProps) {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`https://stock-market-financial-statements-api.vercel.app///${ticker}`);
+        const response = await fetch(`https://stock-market-financial-statements-api.vercel.app/${ticker}`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         } else {
