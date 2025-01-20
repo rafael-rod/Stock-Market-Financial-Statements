@@ -288,7 +288,7 @@ export default function IncomeStatement({ ticker }: IncomeStatementProps) {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:5000/api/financials/${ticker}`);
+        const response = await fetch(`https://stock-market-financial-statements-gareqa73p.vercel.app/${ticker}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
